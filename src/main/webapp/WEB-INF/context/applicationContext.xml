@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:c="http://www.springframework.org/schema/c"
+  xmlns:p="http://www.springframework.org/schema/p"
+  xmlns:util="http://www.springframework.org/schema/util"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+  http://www.springframework.org/schema/mvc  
+  http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
+
+  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="location" value="classpath:configuration.properties"/>
+  </bean>
+
+  <bean id="viewSelector" class="edu.oakland.portlet.mvc.ThemeNameViewSelectorImpl"/>
+
+  <context:component-scan base-package="edu.oakland.portlet.mvc" />  
+  <context:component-scan base-package="edu.oakland.portlet.service" />  
+  <context:component-scan base-package="edu.oakland.portlet.mvc.portlet" />  
+  <context:component-scan base-package="edu.oakland.portlet.database" />
+
+   <bean id="databaseInit" class="edu.oakland.portlet.database.DatabaseInit" init-method="init"/>
+
+    <bean id="dataSource" destroy-method="close" class="org.apache.commons.dbcp2.BasicDataSource">
+      <property name="driverClassName">
+        <value>@environment.build.hibernate.connection.driver_class@</value>
+      </property>
+      <property name="url">
+        <value>@environment.build.hibernate.connection.url@</value>
+      </property>
+      <property name="username">
+        <value>@environment.build.hibernate.connection.username@</value>
+      </property>
+      <property name="password">
+        <value>@environment.build.hibernate.connection.password@</value>
+      </property>
+      <property name="testOnBorrow" value="true" />
+      <property name="validationQuery" value="SELECT version()" />
+    </bean>
+
+  <!-- XML view resolver for JSON view -->
+  <bean id="xmlViewResolver" class="org.springframework.web.servlet.view.XmlViewResolver">
+    <property name="order" value="1"/>
+    <property name="location" value="/WEB-INF/views.xml"/>
+  </bean>
+</beans>
